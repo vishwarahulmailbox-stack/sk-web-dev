@@ -8,7 +8,7 @@
 :root {
   --ink: #211d1a;
   --ink-soft: #46403a;
-  --ink-faint: #7770666b;
+  --ink-faint: #6b645b; /* solid tone: keeps small labels readable (4.5:1) */
   --stone: #e9e3d4;
   --stone-deep: #ddd4bd;
   --paper: #fbf9f4;
@@ -1056,81 +1056,81 @@ section {
   background: var(--paper);
 }
 
-.clients-grid {
+/* one framed panel, four equal cells divided by hairlines */
+.clients-panel {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.4rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 48px -32px rgba(33, 29, 26, 0.35);
 }
 
-.client-card {
+.client-cell {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  padding: 2.2rem 1.4rem 1.8rem;
   background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.25s ease;
 }
 
-.client-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--line-strong);
-  box-shadow: var(--shadow);
+.client-cell:hover {
+  background: var(--paper);
 }
 
 .client-logo {
-  height: 170px;
+  width: 100%;
+  height: 80px;
+  margin-bottom: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.8rem 2rem;
 }
 
 .client-logo img {
-  max-width: 100%;
-  max-height: 100%;
   width: auto;
   height: auto;
+  max-width: min(100%, 190px);
+  max-height: 56px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
-.client-card:hover .client-logo img {
-  transform: scale(1.04);
+/* square marks need more height to read at the same visual weight */
+.client-logo--tall img {
+  max-height: 80px;
 }
 
-.client-meta {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 1rem 1.3rem;
-  border-top: 1px solid var(--line);
-  background: var(--paper-dim);
+.client-cell:hover .client-logo img {
+  transform: scale(1.05);
 }
 
-.client-meta strong {
+.client-name {
   font-size: 0.95rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .client-sector {
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--brass-text);
-  white-space: nowrap;
 }
 
 .clients-note {
-  margin-top: 2.4rem;
+  margin-top: 2.2rem;
   text-align: center;
   color: var(--ink-soft);
   font-family: var(--font-display);
   font-style: italic;
-  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
 }
 
 /* ---------- projects: show more ---------- */
@@ -1901,8 +1901,8 @@ a.info-icon--address:hover {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .clients-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .clients-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .contact-grid {
@@ -1995,27 +1995,48 @@ a.info-icon--address:hover {
   }
 
   .project-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
   }
 
-  .clients-grid {
-    gap: 0.9rem;
+  .project-item {
+    aspect-ratio: 4 / 5;
+  }
+
+  .project-item--wide {
+    grid-column: span 1;
+    aspect-ratio: 4 / 5;
+  }
+
+  .project-tag {
+    left: 0.4rem;
+    right: 0.4rem;
+    bottom: 0.4rem;
+    font-size: 0.6rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .client-cell {
+    padding: 1.5rem 0.8rem 1.3rem;
   }
 
   .client-logo {
-    height: 120px;
-    padding: 1.2rem;
+    height: 60px;
+    margin-bottom: 0.9rem;
   }
 
-  .client-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.2rem;
-    padding: 0.8rem 1rem;
+  .client-logo img {
+    max-height: 40px;
   }
 
-  .client-meta strong {
-    font-size: 0.88rem;
+  .client-logo--tall img {
+    max-height: 60px;
+  }
+
+  .client-name {
+    font-size: 0.85rem;
   }
 
   .wa-float {
