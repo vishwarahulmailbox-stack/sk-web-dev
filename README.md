@@ -5,12 +5,13 @@ A ground-up rebuild of the S K Enterprises marketing site. No Mobirise, no Boots
 ## What's in here
 
 ```
-index.html            Full one-page site: hero, about, mission, goals, services, projects, ongoing, why us, team, testimonials, contact
+index.html            Full one-page site: hero, about, mission, goals, services, projects, ongoing, clients, why us, team, testimonials, contact
 thank-you.html         Redirect target after the contact form is submitted
 google-apps-script.gs  Script that sends contact form submissions from your Gmail (see setup below)
 assets/css/main.css    Entire design system (colors, type, layout, components)
 assets/js/main.js      Sticky nav, mobile menu, scroll reveal, project filter, carousels, contact form
 assets/images/         Photos used on the site, resized and compressed for the web
+assets/images/clients/ Client logos (SBI, Mahindra Lifespaces, Newa Group, Oberoi Realty) as SVG
 ```
 
 ## Design

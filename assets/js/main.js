@@ -60,9 +60,45 @@
     });
   }
 
-  /* ---------- project filter ---------- */
+  /* ---------- project filter + "show all photos" ---------- */
   var filterBtns = document.querySelectorAll(".filter-btn");
   var projectItems = document.querySelectorAll(".project-item");
+  var projectGrid = document.getElementById("project-grid");
+  var moreWrap = document.querySelector(".projects-more");
+  var moreBtn = document.getElementById("projects-more");
+  var INITIAL_COUNT = 12;
+  var currentFilter = "all";
+
+  projectItems.forEach(function (item, i) {
+    if (i >= INITIAL_COUNT) item.classList.add("is-extra");
+  });
+
+  function updateMore() {
+    if (!projectGrid || !moreWrap || !moreBtn) return;
+    // the "show all" toggle only applies to the full "All work" view
+    var canCollapse = currentFilter === "all" && projectItems.length > INITIAL_COUNT;
+    moreWrap.hidden = !canCollapse;
+    if (!canCollapse) {
+      projectGrid.classList.remove("is-collapsed");
+      return;
+    }
+    var collapsed = projectGrid.classList.contains("is-collapsed");
+    moreBtn.textContent = collapsed ? "Show all " + projectItems.length + " photos" : "Show fewer photos";
+    moreBtn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  }
+
+  if (projectGrid && moreBtn) {
+    projectGrid.classList.add("is-collapsed");
+    moreBtn.addEventListener("click", function () {
+      var wasCollapsed = projectGrid.classList.toggle("is-collapsed") === false;
+      updateMore();
+      if (!wasCollapsed) {
+        projectGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+    updateMore();
+  }
+
   filterBtns.forEach(function (btn) {
     btn.addEventListener("click", function () {
       filterBtns.forEach(function (b) {
@@ -70,12 +106,42 @@
       });
       btn.classList.add("is-active");
       var filter = btn.getAttribute("data-filter");
+      currentFilter = filter;
       projectItems.forEach(function (item) {
         var match = filter === "all" || item.getAttribute("data-category") === filter;
         item.hidden = !match;
       });
+      if (filter === "all" && projectGrid) projectGrid.classList.add("is-collapsed");
+      updateMore();
     });
   });
+
+  /* ---------- hero stats count-up ---------- */
+  var statEls = document.querySelectorAll(".stat-num[data-count]");
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (statEls.length && !reduceMotion && "IntersectionObserver" in window) {
+    var countIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        countIo.unobserve(el);
+        var target = parseInt(el.getAttribute("data-count"), 10);
+        var start = null;
+        var duration = 1400;
+        var step = function (ts) {
+          if (start === null) start = ts;
+          var t = Math.min((ts - start) / duration, 1);
+          var eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = Math.round(target * eased) + "+";
+          if (t < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+      });
+    }, { threshold: 0.6 });
+    statEls.forEach(function (el) {
+      countIo.observe(el);
+    });
+  }
 
   /* ---------- project lightbox ---------- */
   var lightbox = document.getElementById("lightbox");
