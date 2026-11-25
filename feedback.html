@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SK Enterprises — Client Feedback</title>
+<style>
+  :root{
+    --navy:#0D284F;
+    --navy-2:#173C6E;
+    --teal:#48B8A9;
+    --teal-2:#39A092;
+    --teal-light:#8FDCCF;
+    --teal-pale:#EAF8F5;
+    --gold:#D4AF37;
+    --gold-2:#B8912C;
+    --gold-light:#F3DE8A;
+    --bg:#F3F8F7;
+    --ink:#1E2A32;
+    --grey:#748088;
+    --line:#E1EBE9;
+    --card:#FFFFFF;
+    --warn:#E4572E;
+    --mid:#F2B705;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Segoe UI',Calibri,Arial,sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ---------- animated backdrop ---------- */
+  #bgCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    opacity:.55;
+  }
+
+  /* ---------- progress bar ---------- */
+  .progress-wrap{
+    position:fixed;
+    top:0; left:0; right:0;
+    height:5px;
+    background:rgba(13,40,79,0.08);
+    z-index:1000;
+  }
+  .progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--navy),var(--teal));
+    transition:width .35s ease;
+  }
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:860px;
+    margin:44px auto;
+    padding:0 18px;
+  }
+
+  .sheet{
+    background:var(--card);
+    border-radius:20px;
+    box-shadow:0 25px 60px -20px rgba(13,40,79,0.25), 0 4px 18px rgba(13,40,79,0.06);
+    overflow:hidden;
+  }
+
+  /* ---------- header ---------- */
+  .header{
+    position:relative;
+    padding:40px 48px 64px 48px;
+    background:linear-gradient(135deg,var(--navy) 0%, var(--navy-2) 55%, var(--teal-2) 130%);
+    color:#fff;
+    overflow:hidden;
+  }
+  .header::before{
+    content:"";
+    position:absolute;
+    width:340px;height:340px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(72,184,169,0.35), transparent 65%);
+    top:-140px; right:-100px;
+  }
+  .header-row{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    position:relative;
+    z-index:2;
+  }
+  .logo-badge{
+    width:64px;height:64px;
+    border-radius:16px;
+    background:rgba(255,255,255,0.94);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 22px rgba(0,0,0,0.18);
+    flex-shrink:0;
+    padding:8px;
+  }
+  .logo-badge img{width:100%;height:100%;object-fit:contain;}
+  .brandtext h1{
+    margin:0;
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:24px;
+    letter-spacing:1.5px;
+    font-weight:700;
+  }
+  .brandtext p{
+    margin:5px 0 0 0;
+    font-size:11.5px;
+    letter-spacing:2.5px;
+    color:var(--teal-light);
+    text-transform:uppercase;
+    font-weight:600;
+  }
+  .header h2{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:32px;
+    letter-spacing:1px;
+    margin:34px 0 8px 0;
+    position:relative;
+    z-index:2;
+  }
+  .header .sub{
+    font-size:14.5px;
+    color:rgba(255,255,255,0.82);
+    max-width:520px;
+    line-height:1.6;
+    position:relative;
+    z-index:2;
+  }
+  .wave{
+    position:absolute;
+    left:0; right:0; bottom:-2px;
+    width:100%; height:48px;
+    z-index:2;
+  }
+
+  /* ---------- content ---------- */
+  .content{padding:20px 48px 46px 48px;}
+  .section{
+    margin-top:38px;
+    opacity:0;
+    transform:translateY(16px);
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  .section.in{opacity:1; transform:translateY(0);}
+
+  .section-title{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .section-title .num{
+    width:32px;height:32px;
+    flex-shrink:0;
+    border-radius:9px;
+    background:linear-gradient(135deg,var(--navy),var(--teal-2));
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;
+    font-weight:700;
+  }
+  .section-title h3{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:18px;
+    letter-spacing:.5px;
+    color:var(--navy);
+    margin:0;
+    flex:1;
+  }
+  .section-title .rule{
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg,var(--line),transparent);
+  }
+
+  .field-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px 32px;
+  }
+  .field{position:relative;}
+  .field label{
+    display:block;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1.3px;
+    color:var(--grey);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .field input, .field select{
+    width:100%;
+    border:none;
+    border-bottom:2px solid var(--line);
+    background:transparent;
+    padding:9px 4px;
+    font-size:15px;
+    color:var(--ink);
+    font-family:inherit;
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+  .field input:focus, .field select:focus{
+    outline:none;
+    border-color:var(--teal);
+    box-shadow:0 6px 14px -10px var(--teal);
+  }
+
+  .hint{font-style:italic;color:var(--grey);font-size:13px;margin:-6px 0 18px 0;}
+
+  /* ---------- rating rows with stars ---------- */
+  .rating-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 18px;
+    border-radius:12px;
+    margin-bottom:8px;
+    background:var(--teal-pale);
+    transition:background .2s ease;
+  }
+  .rating-row:hover{background:#E1F4EF;}
+  .rating-row .plabel{font-size:14.5px; font-weight:600; color:var(--ink); max-width:56%;}
+  .stars{display:flex; gap:6px;}
+  .star{
+    font-size:24px;
+    cursor:pointer;
+    color:#D9D3BE;
+    transition:transform .15s ease, color .15s ease;
+    user-select:none;
+  }
+  .star:hover{transform:scale(1.18);}
+  .star.filled{color:var(--gold); text-shadow:0 1px 3px rgba(212,175,55,0.35);}
+
+  /* ---------- text areas ---------- */
+  .qtext{
+    font-weight:700;
+    color:var(--navy);
+    font-size:14.5px;
+    margin:22px 0 10px 0;
+  }
+  textarea{
+    width:100%;
+    min-height:70px;
+    border:2px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    font-family:inherit;
+    font-size:14.5px;
+    color:var(--ink);
+    resize:vertical;
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+  textarea:focus{
+    outline:none;
+    border-color:var(--teal);
+    box-shadow:0 0 0 4px rgba(72,184,169,0.15);
+  }
+
+  /* ---------- Yes / No choice ---------- */
+  .choice-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:16px;}
+  .choice{
+    min-width:120px;
+    padding:12px 28px;
+    border-radius:30px;
+    border:2px solid var(--line);
+    background:#fff;
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--grey);
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .choice:hover{transform:translateY(-2px); border-color:var(--teal);}
+  .choice.sel-yes{background:var(--teal-2); border-color:transparent; color:#fff; box-shadow:0 10px 20px -10px rgba(57,160,146,0.6);}
+  .choice.sel-no{background:var(--warn); border-color:transparent; color:#fff; box-shadow:0 10px 20px -10px rgba(228,87,46,0.6);}
+
+  /* ---------- signature pad ---------- */
+  .sig-box{
+    border:2px dashed var(--line);
+    border-radius:14px;
+    background:#FCFDFC;
+    position:relative;
+    margin-top:10px;
+    touch-action:none;
+  }
+  .sig-box canvas{
+    width:100%;
+    height:180px;
+    display:block;
+    border-radius:12px;
+    cursor:crosshair;
+  }
+  .sig-placeholder{
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    color:#B9C2C0;
+    font-size:14px;
+    font-style:italic;
+    pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  .sig-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
+  }
+  .sig-toolbar .sig-status{
+    font-size:12.5px;
+    color:var(--grey);
+  }
+  .sig-toolbar .sig-status.ok{color:var(--teal-2); font-weight:600;}
+  .sig-clear{
+    background:none;
+    border:1.5px solid var(--line);
+    color:var(--navy);
+    padding:7px 16px;
+    border-radius:20px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .sig-clear:hover{border-color:var(--warn); color:var(--warn);}
+
+  /* ---------- actions ---------- */
+  .actions{
+    margin-top:44px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .btn{
+    border:none;
+    padding:14px 26px;
+    border-radius:30px;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.3px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .btn:hover{transform:translateY(-3px);}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--navy),var(--teal-2));
+    color:#fff;
+    box-shadow:0 14px 26px -10px rgba(13,40,79,0.5);
+  }
+  .btn-secondary{
+    background:#fff;
+    color:var(--navy);
+    border:2px solid var(--navy);
+    padding:12px 24px;
+    box-shadow:0 10px 22px -12px rgba(13,40,79,0.35);
+  }
+  .btn-secondary:hover{background:var(--teal-pale);}
+  .btn:disabled{cursor:default; transform:none;}
+  .field-err{
+    display:none;
+    color:var(--warn);
+    font-size:12px;
+    font-weight:600;
+    margin-top:6px;
+  }
+  .field-err.show{display:block;}
+  .char-count{
+    text-align:right;
+    font-size:12px;
+    color:var(--grey);
+    margin:6px 2px 0 0;
+  }
+  .char-count.max{color:var(--warn); font-weight:600;}
+  .email-note{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--grey);
+    margin:14px auto 0 auto;
+    max-width:460px;
+    line-height:1.5;
+  }
+  .email-note.err{color:var(--warn); font-weight:600;}
+
+  .progress-fill-note{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--grey);
+    margin-top:10px;
+  }
+
+  .footer{
+    text-align:center;
+    padding:26px 20px;
+    background:var(--teal-pale);
+    border-top:1px solid var(--line);
+  }
+  .footer p{margin:2px 0; font-size:11.5px; letter-spacing:1px; color:var(--grey);}
+  .footer p.contact{color:var(--teal-2); font-weight:700;}
+
+  /* ---------- success overlay ---------- */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(13,40,79,0.55);
+    backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center;
+    z-index:2000;
+    opacity:0; pointer-events:none;
+    transition:opacity .3s ease;
+  }
+  .overlay.show{opacity:1; pointer-events:auto;}
+  .overlay-card{
+    background:#fff;
+    border-radius:22px;
+    padding:40px 44px;
+    text-align:center;
+    max-width:380px;
+    transform:scale(.85);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 30px 70px rgba(0,0,0,0.35);
+  }
+  .overlay.show .overlay-card{transform:scale(1);}
+  .checkmark{width:76px;height:76px;margin:0 auto 16px auto;}
+  .checkmark circle{
+    fill:none; stroke:var(--teal); stroke-width:4;
+    stroke-dasharray:220; stroke-dashoffset:220;
+    animation:circleDraw .6s ease forwards;
+  }
+  .checkmark path{
+    fill:none; stroke:var(--teal); stroke-width:5;
+    stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:50; stroke-dashoffset:50;
+    animation:tickDraw .35s .55s ease forwards;
+  }
+  @keyframes circleDraw{to{stroke-dashoffset:0;}}
+  @keyframes tickDraw{to{stroke-dashoffset:0;}}
+  .overlay-card h3{margin:0 0 8px 0; color:var(--navy); font-family:Georgia,serif; font-size:21px;}
+  .overlay-card p{color:var(--grey); font-size:14px; line-height:1.6; margin:0 0 22px 0;}
+
+  #confetti-canvas{position:fixed; inset:0; z-index:1999; pointer-events:none;}
+
+  @media print{
+    *{
+      -webkit-print-color-adjust:exact !important;
+      print-color-adjust:exact !important;
+      color-adjust:exact !important;
+    }
+    @page{ margin:12mm; }
+    #bgCanvas,#confetti-canvas,.progress-wrap,.actions,.email-note,.progress-fill-note,.overlay{display:none !important;}
+    html,body{background:#fff !important;}
+    .wrap{margin:0 !important; max-width:100% !important; padding:0 !important;}
+    .sheet{
+      box-shadow:none !important;
+      border-radius:0 !important;
+    }
+    .header{
+      background:linear-gradient(135deg,var(--navy) 0%, var(--navy-2) 55%, var(--teal-2) 130%) !important;
+      -webkit-print-color-adjust:exact;
+    }
+    .header::before{display:none;}
+    .section{opacity:1 !important; transform:none !important;}
+    .section{page-break-inside:avoid; break-inside:avoid;}
+    .rating-row{page-break-inside:avoid; break-inside:avoid;}
+    textarea{
+      border:1.5px solid var(--line) !important;
+      min-height:56px;
+    }
+    .choice.sel-yes,.choice.sel-no{ box-shadow:none !important; }
+    .star{ -webkit-text-stroke:0.3px #b98f00; }
+    a[href]:after{content:"";}
+  }
+  @media (max-width:600px){
+    .header{padding:26px 22px 50px 22px;}
+    .content{padding:14px 22px 34px 22px;}
+    .field-grid{grid-template-columns:1fr;}
+    .rating-row{flex-direction:column; align-items:flex-start; gap:10px;}
+    .header h2{font-size:23px; margin-top:26px;}
+    .logo-badge{width:52px;height:52px;border-radius:13px;}
+    .brandtext h1{font-size:18px; letter-spacing:.8px;}
+    .brandtext p{font-size:9.5px; letter-spacing:1.6px;}
+    .header-row{gap:12px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="wrap">
+  <div class="sheet">
+
+    <div class="header">
+      <div class="header-row">
+        <div class="logo-badge"><img src="data:image/png;base64,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" alt="SK Enterprises logo"></div>
+        <div class="brandtext">
+          <h1>SK ENTERPRISES</h1>
+          <p>Interior Turnkey Solutions &nbsp;·&nbsp; Mumbai</p>
+        </div>
+      </div>
+      <h2>How did we do?</h2>
+      <p class="sub">A couple of minutes from you helps our designers and craftsmen raise the bar on every project that follows. Thank you for being part of our story.</p>
+      <svg class="wave" viewBox="0 0 900 60" preserveAspectRatio="none">
+        <path d="M0,32 C150,60 300,0 450,24 C600,48 750,10 900,30 L900,60 L0,60 Z" fill="#ffffff"></path>
+      </svg>
+    </div>
+
+    <div class="content">
+
+      <!-- 01 -->
+      <div class="section" data-section>
+        <div class="section-title"><div class="num">01</div><h3>Project Details</h3><div class="rule"></div></div>
+        <div class="field-grid">
+          <div class="field"><label>Client Name</label><input type="text" class="req" id="clientName" placeholder="e.g. Rahul Mehta"></div>
+          <div class="field"><label>Project Address</label><input type="text" id="projectAddress" placeholder="Locality, City"></div>
+          <div class="field"><label>Area (sq. ft.)</label><input type="number" id="areaSqft" placeholder="e.g. 1450"></div>
+          <div class="field"><label>Date of Handover</label><input type="date" id="handoverDate"><div class="field-err" id="handoverDateErr"></div></div>
+        </div>
+      </div>
+
+      <!-- 02 -->
+      <div class="section" data-section>
+        <div class="section-title"><div class="num">02</div><h3>Rate Your Experience</h3><div class="rule"></div></div>
+        <p class="hint">Tap a star to rate — 1 (poor) to 5 (excellent).</p>
+        <div class="rating-list">
+          <div class="rating-row" data-param="Design concept & creativity"><span class="plabel">Design concept & creativity</span><span class="stars" data-rating="0">★★★★★</span></div>
+          <div class="rating-row" data-param="Team communication & responsiveness"><span class="plabel">Team communication & responsiveness</span><span class="stars" data-rating="0">★★★★★</span></div>
+          <div class="rating-row" data-param="Site cleanliness & professionalism"><span class="plabel">Site cleanliness & professionalism</span><span class="stars" data-rating="0">★★★★★</span></div>
+        </div>
+      </div>
+
+      <!-- 03 -->
+      <div class="section" data-section>
+        <div class="section-title"><div class="num">03</div><h3>In Your Own Words</h3><div class="rule"></div></div>
+        <p class="qtext" style="margin-top:0;">Tell us about your experience of working with SK Enterprises.</p>
+        <textarea id="feedbackText" maxlength="550" style="min-height:140px" placeholder="Type your feedback here..."></textarea>
+        <p class="char-count" id="charCount">0 / 550 characters</p>
+      </div>
+
+      <!-- 04 -->
+      <div class="section" data-section>
+        <div class="section-title"><div class="num">04</div><h3>Would You Recommend Us?</h3><div class="rule"></div></div>
+        <p class="hint" style="margin-bottom:0;">Would you recommend us to a friend, family member or colleague?</p>
+        <div class="choice-row" id="recommendRow">
+          <button type="button" class="choice" data-val="Yes">Yes</button>
+          <button type="button" class="choice" data-val="No">No</button>
+        </div>
+      </div>
+
+      <!-- 05 -->
+      <div class="section" data-section>
+        <div class="section-title"><div class="num">05</div><h3>Acknowledgement</h3><div class="rule"></div></div>
+        <div class="field-grid">
+          <div class="field"><label>Full Name</label><input type="text" id="sigName" placeholder="Your name"></div>
+          <div class="field"><label>Date</label><input type="date" id="sigDate"><div class="field-err" id="sigDateErr"></div></div>
+        </div>
+        <label style="display:block; font-size:11px; font-weight:700; letter-spacing:1.3px; color:var(--grey); text-transform:uppercase; margin:22px 0 0 0;">Draw Your Signature</label>
+        <div class="sig-box">
+          <canvas id="sigCanvas"></canvas>
+          <span class="sig-placeholder" id="sigPlaceholder">Sign here with mouse or finger</span>
+        </div>
+        <div class="sig-toolbar">
+          <span class="sig-status" id="sigStatus">Not signed yet</span>
+          <button type="button" class="sig-clear" id="sigClear">↺ Clear Signature</button>
+        </div>
+        <p class="sig-hint">By signing above, you confirm this feedback reflects your genuine experience.</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="emailBtn">✉ Send via Email</button>
+        <button class="btn btn-secondary" id="downloadBtn">⬇ Download PDF</button>
+      </div>
+      <p class="email-note" id="emailNote">A PDF copy of your feedback will be prepared and sent to skbusiness576@gmail.com through your email app.</p>
+      <p class="progress-fill-note" id="progressNote">0% complete</p>
+
+    </div>
+
+    <div class="footer">
+      <p>29/1, SAIDHAM SHOPPING PLAZA, PK ROAD, MULUND WEST, MUMBAI 400080</p>
+      <p class="contact">+91 98702 00076 &nbsp;·&nbsp; skbusiness576@gmail.com</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-card">
+    <svg class="checkmark" viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="34"></circle>
+      <path d="M24,42 L35,53 L57,29"></path>
+    </svg>
+    <h3>Thank You!</h3>
+    <p id="overlayMsg"></p>
+    <button class="btn btn-primary" onclick="document.getElementById('overlay').classList.remove('show')">Close</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/5.1.1/signature_pad.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+let signaturePad = null;
+function hasSignature(){
+  return signaturePad && !signaturePad.isEmpty();
+}
+function getSignatureImage(){
+  return hasSignature() ? signaturePad.toDataURL('image/png') : null;
+}
+
+/* ---------------- animated background blobs ---------------- */
+(function(){
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let W,H;
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=document.documentElement.scrollHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const blobs = [
+    {x:.1,y:.05,r:260,c:'72,184,169',dx:.15,dy:.09,t:0},
+    {x:.85,y:.12,r:220,c:'13,40,79',dx:-.12,dy:.13,t:1.5},
+    {x:.75,y:.55,r:300,c:'72,184,169',dx:.1,dy:-.1,t:3},
+    {x:.15,y:.7,r:240,c:'13,40,79',dx:-.09,dy:.11,t:4.5},
+    {x:.5,y:.9,r:260,c:'72,184,169',dx:.08,dy:-.08,t:6},
+  ];
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const now = Date.now()/4000;
+    blobs.forEach(b=>{
+      const x = b.x*W + Math.sin(now+b.t)*60*b.dx*10;
+      const y = b.y*H + Math.cos(now+b.t)*60*b.dy*10;
+      const g = ctx.createRadialGradient(x,y,0,x,y,b.r);
+      g.addColorStop(0, `rgba(${b.c},0.30)`);
+      g.addColorStop(1, `rgba(${b.c},0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x,y,b.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('load', resize);
+  setTimeout(resize, 400);
+})();
+
+/* ---------------- scroll reveal ---------------- */
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+},{threshold:.05, rootMargin:'0px 0px -5% 0px'});
+document.querySelectorAll('[data-section]').forEach(s=>obs.observe(s));
+
+/* ---------------- progress bar (scroll) ---------------- */
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+});
+
+/* ---------------- star ratings ---------------- */
+document.querySelectorAll('.stars').forEach(starEl=>{
+  const full = '★★★★★';
+  starEl.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const s = document.createElement('span');
+    s.className='star';
+    s.textContent='★';
+    s.dataset.val=i;
+    starEl.appendChild(s);
+  }
+  starEl.addEventListener('click', (e)=>{
+    if(!e.target.classList.contains('star')) return;
+    const val = +e.target.dataset.val;
+    starEl.dataset.rating = val;
+    [...starEl.children].forEach((st,idx)=>{
+      st.classList.toggle('filled', idx < val);
+    });
+    updateProgress();
+  });
+  starEl.addEventListener('mouseover', (e)=>{
+    if(!e.target.classList.contains('star')) return;
+    const val = +e.target.dataset.val;
+    [...starEl.children].forEach((st,idx)=>{
+      st.style.color = idx < val ? '#F3DE8A' : '';
+    });
+  });
+  starEl.addEventListener('mouseleave', ()=>{
+    [...starEl.children].forEach((st)=> st.style.color='');
+  });
+});
+
+/* ---------------- recommend: Yes / No ---------------- */
+let recommendVal = null;   // 'Yes' or 'No'
+document.querySelectorAll('#recommendRow .choice').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    recommendVal = b.dataset.val;
+    document.querySelectorAll('#recommendRow .choice').forEach(x=>x.classList.remove('sel-yes','sel-no'));
+    b.classList.add(recommendVal === 'Yes' ? 'sel-yes' : 'sel-no');
+    updateProgress();
+  });
+});
+
+/* ---------------- progress tracking ---------------- */
+function updateProgress(){
+  let total=0, filled=0;
+  document.querySelectorAll('.field input, .field select').forEach(el=>{
+    total++; if(el.value && el.value.trim()!=='') filled++;
+  });
+  document.querySelectorAll('textarea').forEach(el=>{
+    total++; if(el.value && el.value.trim()!=='') filled++;
+  });
+  document.querySelectorAll('.stars').forEach(el=>{
+    total++; if(+el.dataset.rating>0) filled++;
+  });
+  total++; if(recommendVal!==null) filled++;
+  total++; if(hasSignature() || (document.getElementById('sigName').value||'').trim()!=='') filled++;
+  const pct = Math.round((filled/total)*100);
+  document.getElementById('progressNote').textContent = pct+'% complete';
+}
+document.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input', updateProgress));
+updateProgress();
+
+/* ---------------- confetti ---------------- */
+function fireConfetti(){
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#48B8A9','#0D284F','#8FDCCF','#F2B705'];
+  let pieces = Array.from({length:140}).map(()=>({
+    x: canvas.width/2, y: canvas.height/2,
+    vx: (Math.random()-.5)*14, vy: (Math.random()-1.4)*14,
+    size: Math.random()*7+4, color: colors[Math.floor(Math.random()*colors.length)],
+    rot: Math.random()*360, vr:(Math.random()-.5)*12, life:0
+  }));
+  function anim(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.vy += .28; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life++;
+      ctx.save();
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.6);
+      ctx.restore();
+    });
+    pieces = pieces.filter(p=>p.life<130 && p.y<canvas.height+50);
+    if(pieces.length) requestAnimationFrame(anim);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  anim();
+}
+
+/* ---------------- dates: no future dates allowed ---------------- */
+function todayISO(){
+  const d = new Date(), p = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());   // local date, not UTC
+}
+const dateInputs = [document.getElementById('handoverDate'), document.getElementById('sigDate')];
+function setDateMax(){ const t = todayISO(); dateInputs.forEach(el => { el.max = t; }); }
+// returns false (and clears the field) if a future date was entered, e.g. by typing or pasting
+function enforceNotFuture(el){
+  const err = document.getElementById(el.id + 'Err');
+  if(el.value && el.value > todayISO()){
+    el.value = '';
+    err.textContent = 'Please choose today or an earlier date.';
+    err.classList.add('show');
+    updateProgress();
+    return false;
+  }
+  err.classList.remove('show');
+  return true;
+}
+setDateMax();
+dateInputs.forEach(el => {
+  el.addEventListener('focus', setDateMax);   // keeps "today" right if the page stays open past midnight
+  el.addEventListener('change', () => enforceNotFuture(el));
+});
+
+/* ---------------- collect summary text ---------------- */
+const FEEDBACK_EMAIL = 'skbusiness576@gmail.com';
+
+/* ---------------- feedback box: 550-character limit ---------------- */
+const MAX_CHARS = 550;
+const capText = t => t.slice(0, MAX_CHARS);
+const feedbackBox = document.getElementById('feedbackText');
+const charCountEl = document.getElementById('charCount');
+function refreshCharCount(){
+  if(feedbackBox.value.length > MAX_CHARS) feedbackBox.value = capText(feedbackBox.value);
+  const n = feedbackBox.value.length;
+  charCountEl.textContent = n + ' / ' + MAX_CHARS + ' characters';
+  charCountEl.classList.toggle('max', n >= MAX_CHARS);
+}
+feedbackBox.addEventListener('input', refreshCharCount);
+refreshCharCount();
+
+function collectSummary(){
+  const val = id => (document.getElementById(id).value || '').trim() || '-';
+  const ratings = collectRatings();
+  const lines = [];
+  lines.push('CLIENT FEEDBACK — SK ENTERPRISES');
+  lines.push('=================================');
+  lines.push('Client Name: '+val('clientName'));
+  lines.push('Project Address: '+val('projectAddress'));
+  lines.push('Area (sq. ft.): '+val('areaSqft'));
+  lines.push('Date of Handover: '+val('handoverDate'));
+  lines.push('');
+  lines.push('RATINGS (out of 5):');
+  Object.keys(ratings).forEach(k=> lines.push('- '+k+': '+ratings[k]));
+  lines.push('');
+  lines.push('FEEDBACK:');
+  lines.push(capText(val('feedbackText')) || '-');
+  lines.push('');
+  lines.push('Would recommend us to friends/family/colleagues: '+(recommendVal||'-'));
+  lines.push('Signed by: '+val('sigName')+' on '+val('sigDate'));
+  return lines.join('\n');
+}
+
+/* ---------------- gather ratings as {label: score} ---------------- */
+function collectRatings(){
+  const ratings = {};
+  document.querySelectorAll('.rating-row').forEach(r=>{
+    ratings[r.dataset.param] = +(r.querySelector('.stars').dataset.rating || 0);
+  });
+  return ratings;
+}
+
+/* ---------------- PDF: build a printable report, then convert to PDF ---------------- */
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function prettyDate(v){
+  if(!v) return '—';
+  const d = new Date(v+'T00:00:00');
+  return isNaN(d) ? escapeHtml(v) : d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function buildReportNode(){
+  const val = id => (document.getElementById(id).value || '').trim();
+  const dash = s => s ? escapeHtml(s) : '—';
+  const ratings = collectRatings();
+  const logo = document.querySelector('.logo-badge img').src;
+  const sigImg = getSignatureImage();
+  // fixed pixel size for the signature: html2canvas drops images inside shrink-to-fit boxes
+  const sigH = 84;
+  const sigW = sigImg ? Math.round(sigH * signaturePad.canvas.width / signaturePad.canvas.height) : 0;
+  const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+
+  // One font family and one size scale for the whole PDF:
+  //   22px brand band  |  16px section headings  |  14px body text  |  10.5px labels & captions
+  const FONT = "'Segoe UI',Calibri,Arial,sans-serif";
+  const SZ_BAND = '22px', SZ_HEAD = '16px', SZ_BODY = '14px', SZ_CAP = '10.5px';
+  const HEAD = `font-family:${FONT};font-size:${SZ_HEAD};font-weight:600;color:#0D284F;`;
+  const LBL = `font-size:${SZ_CAP};font-weight:700;letter-spacing:1.2px;color:#748088;text-transform:uppercase;margin-bottom:5px;`;
+  const VAL = `font-size:${SZ_BODY};color:#1E2A32;line-height:1.4;word-break:break-word;`;
+  const field = (l, v) => `<div><div style="${LBL}">${l}</div><div style="${VAL}">${v}</div></div>`;
+  const section = (title, inner) =>
+    `<div class="blk" style="padding:36px 44px 0 44px;">
+       <div style="${HEAD}padding-bottom:8px;border-bottom:1.5px solid #E1EBE9;margin-bottom:14px;">${title}</div>
+       ${inner}
+     </div>`;
+  const stars = n =>
+    `<span style="font-size:20px;letter-spacing:3px;color:#D4AF37;">${'★'.repeat(n)}</span><span style="font-size:20px;letter-spacing:3px;color:#D9D3BE;">${'★'.repeat(5-n)}</span>`;
+
+  const details =
+    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px 32px;">
+       ${field('Client Name', dash(val('clientName')))}
+       ${field('Project Address', dash(val('projectAddress')))}
+       ${field('Area (sq. ft.)', dash(val('areaSqft')))}
+       ${field('Date of Handover', prettyDate(val('handoverDate')))}
+     </div>`;
+
+  const ratingRows = Object.keys(ratings).map(k =>
+    `<div style="display:flex;align-items:center;justify-content:space-between;background:#EAF8F5;border-radius:10px;padding:11px 16px;margin-bottom:8px;">
+       <span style="font-size:${SZ_BODY};font-weight:600;">${escapeHtml(k)}</span>
+       <span style="display:flex;align-items:center;gap:10px;">${stars(ratings[k])}<span style="font-size:${SZ_BODY};font-weight:700;color:#0D284F;min-width:34px;text-align:right;">${ratings[k] ? ratings[k]+'/5' : '—'}</span></span>
+     </div>`).join('');
+
+  const fb = capText(val('feedbackText'));
+  const feedback =
+    `<div style="border:1.5px solid #E1EBE9;border-radius:12px;padding:14px 16px;font-size:${SZ_BODY};line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:60px;">${fb ? escapeHtml(fb) : '<span style="color:#748088;font-style:italic;">No comments provided</span>'}</div>`;
+
+  // Recommend: section-style header with the answer printed on the same line
+  const recAnswer = recommendVal===null ? '—' : recommendVal.toUpperCase();
+  const recColor  = recommendVal===null ? '#B9C2C0' : (recommendVal === 'Yes' ? '#39A092' : '#E4572E');
+  const recommend =
+    `<div class="blk" style="padding:36px 44px 0 44px;">
+       <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1.5px solid #E1EBE9;">
+         <span style="${HEAD}">Would Recommend Us to Others?</span>
+         <span style="background:${recColor};color:#fff;font-size:${SZ_BODY};font-weight:700;letter-spacing:1.2px;padding:4px 20px;border-radius:14px;">${recAnswer}</span>
+       </div>
+     </div>`;
+
+  // Acknowledgement: pinned to the bottom of the page together with the footer
+  const sigBoxW = sigImg ? sigW + 19 : 300;
+  const ack =
+    `<div class="blk" style="margin-top:auto;padding:36px 44px 18px 44px;">
+       <div style="${HEAD}padding-bottom:8px;border-bottom:1.5px solid #E1EBE9;margin-bottom:14px;">Acknowledgement</div>
+       <div style="display:flex;align-items:flex-start;gap:48px;">
+         <div style="flex:none;width:${sigBoxW}px;">
+           <div style="${LBL}">Signature</div>
+           ${sigImg
+              ? `<div style="display:block;box-sizing:border-box;width:${sigW + 19}px;border:1.5px dashed #E1EBE9;border-radius:12px;padding:8px;background:#fff;"><img src="${sigImg}" style="display:block;width:${sigW}px;height:${sigH}px;"></div>`
+              : `<div style="font-size:${SZ_CAP};font-style:italic;color:#748088;padding-top:6px;">No hand-drawn signature (typed name only)</div>`}
+         </div>
+         <div style="flex:1;padding-top:20px;">
+           ${field('Full Name', dash(val('sigName')))}
+           <div style="height:16px;"></div>
+           ${field('Date', prettyDate(val('sigDate')))}
+         </div>
+       </div>
+       <div style="font-size:${SZ_CAP};font-style:italic;color:#748088;margin-top:12px;">By signing above, the client confirms this feedback reflects their genuine experience.</div>
+     </div>`;
+
+  // Header: logo + brand and "Client Feedback" share one row
+  const header =
+    `<div class="blk" style="background:linear-gradient(135deg,#0D284F,#173C6E);color:#fff;padding:22px 44px;">
+       <div style="display:flex;align-items:center;gap:16px;">
+         <div style="background:#fff;border-radius:14px;padding:7px 9px;display:flex;align-items:center;justify-content:center;"><img src="${logo}" style="height:44px;width:auto;display:block;"></div>
+         <div>
+           <div style="font-size:${SZ_BAND};font-weight:700;letter-spacing:1.5px;">SK ENTERPRISES</div>
+           <div style="font-size:${SZ_CAP};letter-spacing:2.4px;color:#8FDCCF;font-weight:600;margin-top:4px;">INTERIOR TURNKEY SOLUTIONS · MUMBAI</div>
+         </div>
+         <div style="width:1px;height:46px;background:rgba(255,255,255,0.3);margin:0 12px;"></div>
+         <div>
+           <div style="font-size:${SZ_BAND};font-weight:700;">Client Feedback</div>
+           <div style="font-size:${SZ_CAP};color:rgba(255,255,255,0.8);margin-top:3px;">Prepared on ${today}</div>
+         </div>
+       </div>
+     </div>`;
+
+  // Footer: attached right under the acknowledgement, one line
+  const footer =
+    `<div class="blk" style="background:#EAF8F5;border-top:1px solid #E1EBE9;padding:13px 16px;text-align:center;white-space:nowrap;font-size:${SZ_CAP};letter-spacing:0.2px;color:#748088;">29/1, SAIDHAM SHOPPING PLAZA, PK ROAD, MULUND WEST, MUMBAI 400080 &nbsp;·&nbsp; <span style="color:#39A092;font-weight:700;">+91 98702 00076 &nbsp;·&nbsp; skbusiness576@gmail.com</span></div>`;
+
+  const node = document.createElement('div');
+  node.id = 'pdfReport';
+  node.style.cssText = "position:absolute;left:-10000px;top:0;width:794px;min-height:1123px;display:flex;flex-direction:column;background:#fff;color:#1E2A32;font-family:'Segoe UI',Calibri,Arial,sans-serif;";
+  node.innerHTML = header
+    + section('Project Details', details)
+    + section('Ratings', ratingRows)
+    + recommend
+    + section('Feedback', feedback)
+    + ack
+    + footer;
+  node.querySelectorAll('.blk').forEach(b => { b.style.flex = 'none'; });
+  return node;
+}
+
+async function buildPdfBlob(){
+  const { jsPDF } = window.jspdf;
+  const report = buildReportNode();
+  document.body.appendChild(report);
+  try{
+    // Fit to ONE A4 page: if the content is too tall, make the page wider (same A4 shape).
+    // Everything then scales down evenly when placed on the A4 sheet.
+    let W = 794, PAGE_H;
+    const MAX_W = 1800;
+    for(;;){
+      PAGE_H = Math.floor(W * 297 / 210);
+      report.style.width = W + 'px';
+      report.style.minHeight = PAGE_H + 'px';
+      if(report.offsetHeight <= PAGE_H || W >= MAX_W) break;
+      W += 16;
+    }
+    const top0 = report.getBoundingClientRect().top;
+    const blockTops = [...report.querySelectorAll('.blk')].map(b => b.getBoundingClientRect().top - top0);
+    const total = report.offsetHeight;
+
+    const canvas = await html2canvas(report, {
+      scale: 1588 / W, backgroundColor: '#ffffff', useCORS: true, logging: false,
+      scrollX: 0, scrollY: 0, windowWidth: W,
+      onclone: doc => { const el = doc.getElementById('pdfReport'); el.style.left = '0'; el.style.top = '0'; }
+    });
+
+    const k = canvas.width / W;                      // canvas px per CSS px
+    const pdf = new jsPDF({ unit:'mm', format:'a4', compress:true });
+    let pos = 0, firstPage = true;
+    while(pos < total - 1){
+      // start a new page at a section boundary so sections are not cut in half
+      let end = total;
+      if(total > pos + PAGE_H){
+        const cuts = blockTops.filter(t => t > pos + 40 && t <= pos + PAGE_H);
+        end = cuts.length ? Math.max(...cuts) : pos + PAGE_H;
+      }
+      const sy = Math.round(pos * k);
+      const sh = Math.min(canvas.height - sy, Math.round((end - pos) * k));
+      if(sh <= 0) break;
+      const slice = document.createElement('canvas');
+      slice.width = canvas.width; slice.height = sh;
+      const c = slice.getContext('2d');
+      c.fillStyle = '#ffffff'; c.fillRect(0, 0, slice.width, sh);
+      c.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
+      if(!firstPage) pdf.addPage();
+      pdf.addImage(slice.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, sh / canvas.width * 210);
+      firstPage = false;
+      pos = end;
+    }
+    return pdf.output('blob');
+  } finally {
+    report.remove();
+  }
+}
+
+function downloadBlob(blob, fileName){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fileName;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+function isMobileDevice(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+/* ---------------- email button: make PDF, then hand it to the email app ---------------- */
+const emailNote = document.getElementById('emailNote');
+const emailNoteDefault = emailNote.textContent;
+function setNote(msg, isError){
+  emailNote.textContent = msg || emailNoteDefault;
+  emailNote.classList.toggle('err', !!isError);
+}
+
+// shared by the Email and Download buttons; `action` is 'sending' or 'downloading'
+function validateBeforePdf(action){
+  const nameField = document.getElementById('clientName');
+  if(!nameField.value.trim()){
+    nameField.style.borderColor = '#E4572E';
+    nameField.focus();
+    nameField.placeholder = 'Please enter your name to continue';
+    setNote('Please enter your name before ' + action + '.', true);
+    return false;
+  }
+  for(const el of dateInputs){
+    if(!enforceNotFuture(el)){
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      setNote('Dates cannot be in the future. Please pick today or an earlier date.', true);
+      return false;
+    }
+  }
+  if(!hasSignature() && !(document.getElementById('sigName').value||'').trim()){
+    document.getElementById('sigStatus').textContent = 'Please sign or type your name to confirm';
+    document.getElementById('sigStatus').style.color = '#E4572E';
+    document.getElementById('sigCanvas').scrollIntoView({behavior:'smooth', block:'center'});
+    setNote('Please sign or type your name before ' + action + '.', true);
+    return false;
+  }
+  setNote('');
+
+  if(typeof html2canvas === 'undefined' || !window.jspdf){
+    setNote('The PDF tool could not load. Please check your internet connection and reload the page.', true);
+    return false;
+  }
+  return true;
+}
+
+function pdfFileNameFor(name){
+  const slug = name.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'Client';
+  return 'SK-Enterprises-Feedback-' + slug + '.pdf';
+}
+
+/* ---------------- download button: make PDF and save it to the device ---------------- */
+document.getElementById('downloadBtn').addEventListener('click', async ()=>{
+  if(!validateBeforePdf('downloading')) return;
+
+  const btn = document.getElementById('downloadBtn');
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Preparing PDF...';
+  btn.style.opacity = '0.75';
+
+  try{
+    const fileName = pdfFileNameFor(document.getElementById('clientName').value.trim());
+    const blob = await buildPdfBlob();
+    downloadBlob(blob, fileName);
+    document.getElementById('overlayMsg').textContent =
+      'Your feedback PDF (' + fileName + ') has been saved to your device. To send it to us, use the Send via Email button or email the PDF to ' + FEEDBACK_EMAIL + '.';
+    document.getElementById('overlay').classList.add('show');
+    fireConfetti();
+  }catch(err){
+    console.error('PDF download failed:', err);
+    setNote('Sorry, we could not create the PDF. Please check your internet connection and try again.', true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    btn.style.opacity = '1';
+  }
+});
+
+document.getElementById('emailBtn').addEventListener('click', async ()=>{
+  const nameField = document.getElementById('clientName');
+  if(!validateBeforePdf('sending')) return;
+
+  const btn = document.getElementById('emailBtn');
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Preparing PDF...';
+  btn.style.opacity = '0.75';
+
+  try{
+    const name = nameField.value.trim();
+    const fileName = pdfFileNameFor(name);
+    const subject = 'Client Feedback — ' + name + ' — SK Enterprises';
+    const intro = 'Hello SK Enterprises team,\n\nPlease find my feedback attached as a PDF (' + fileName + ').\n\nRegards,\n' + name;
+
+    const blob = await buildPdfBlob();
+    const file = new File([blob], fileName, {type:'application/pdf'});
+
+    let handled = false;
+    let openedMailApp = false;
+
+    // Phones/tablets: the share sheet can attach the PDF straight into Gmail / Mail / Outlook.
+    if(isMobileDevice() && navigator.canShare && navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({files:[file], title:subject, text:intro});
+        handled = true;
+      }catch(err){
+        if(err && err.name === 'AbortError') return;   // client closed the share sheet
+        // any other error: fall through to download + mailto below
+      }
+    }
+
+    // Desktop (or no share support): save the PDF, then open a ready-addressed email.
+    if(!handled){
+      downloadBlob(blob, fileName);
+      const note = '\n\nIf the PDF is not attached, please attach the file "' + fileName + '" that was just saved to your device.';
+      const mailto = (body) => 'mailto:' + FEEDBACK_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      // include the typed summary as a backup, unless it makes the link too long for mail apps
+      let href = mailto(intro + note + '\n\n----\n' + collectSummary());
+      if(href.length > 1900) href = mailto(intro + note);
+      setTimeout(()=>{ window.location.href = href; }, 500);
+      openedMailApp = true;
+    }
+
+    document.getElementById('overlayMsg').textContent = openedMailApp
+      ? 'Your feedback PDF has been saved to your device and your email app is opening, addressed to ' + FEEDBACK_EMAIL + '. Attach the PDF if it is not already attached, then press Send. If no email window opens, please email the PDF to us at that address.'
+      : 'Your feedback PDF is ready. Please make sure it is sent to ' + FEEDBACK_EMAIL + ' from your email app.';
+    document.getElementById('overlay').classList.add('show');
+    fireConfetti();
+  }catch(err){
+    console.error('PDF/email failed:', err);
+    setNote('Sorry, we could not create the PDF. Please check your internet connection and try again.', true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    btn.style.opacity = '1';
+  }
+});
+
+/* ---------------- signature pad ---------------- */
+(function(){
+  const canvas = document.getElementById('sigCanvas');
+  const placeholder = document.getElementById('sigPlaceholder');
+  const statusEl = document.getElementById('sigStatus');
+
+  function resizeCanvas(){
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const data = signaturePad && !signaturePad.isEmpty() ? signaturePad.toData() : null;
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    canvas.getContext('2d').scale(ratio, ratio);
+    if(signaturePad){
+      signaturePad.clear();
+      if(data) signaturePad.fromData(data);
+    }
+  }
+
+  if(typeof SignaturePad !== 'undefined'){
+    signaturePad = new SignaturePad(canvas, {
+      backgroundColor:'rgba(255,255,255,1)',
+      penColor:'#0D284F',
+      minWidth:1.2,
+      maxWidth:2.6,
+    });
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function refreshStatus(){
+      if(!signaturePad) return;
+      const empty = signaturePad.isEmpty();
+      statusEl.textContent = empty ? 'Not signed yet' : '✓ Signature captured';
+      statusEl.classList.toggle('ok', !empty);
+      statusEl.style.color = '';
+      placeholder.style.opacity = empty ? '1' : '0';
+      updateProgress();
+    }
+
+    signaturePad.addEventListener('beginStroke', ()=>{ placeholder.style.opacity='0'; });
+    signaturePad.addEventListener('endStroke', refreshStatus);
+    // fallback in case the library's own event timing varies across browsers
+    ['pointerup','mouseup','touchend'].forEach(evt=>{
+      canvas.addEventListener(evt, ()=> setTimeout(refreshStatus, 60));
+      document.addEventListener(evt, ()=> setTimeout(refreshStatus, 60), {passive:true});
+    });
+
+    document.getElementById('sigClear').addEventListener('click', ()=>{
+      signaturePad.clear();
+      refreshStatus();
+    });
+  } else {
+    // graceful fallback if the library can't load (e.g. no internet)
+    canvas.style.display='none';
+    placeholder.textContent='Signature pad needs an internet connection — please type your name above instead.';
+    placeholder.style.opacity='1';
+    document.getElementById('sigClear').style.display='none';
+  }
+})();
+</script>
+
+</body>
+</html>
